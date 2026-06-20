@@ -1,0 +1,542 @@
+:root {
+  /* ---- Shared tokens (theme-independent) ---- */
+  --accent-1: #ff9d4d;
+  --accent-2: #ff4d6d;
+  --accent: #ff5e57;
+  --accent-grad: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+
+  --radius: 16px;
+  --radius-sm: 12px;
+  /* Snappy ease for interactions; springy pop reserved for the checkmark. */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ---- Dark theme (default) ---- */
+  --bg: #0b0c10;
+  --grad-1: rgba(255, 94, 87, 0.12);
+  --grad-2: rgba(120, 90, 255, 0.08);
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-2: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text: #f3f4f7;
+  --muted: #8b909c;
+  --muted-dim: #5f636e;
+  --day-bg: rgba(255, 255, 255, 0.04);
+  --day-hover: rgba(255, 255, 255, 0.08);
+  --accent-glow: rgba(255, 77, 109, 0.28);
+  --shadow-card: 0 24px 60px rgba(0, 0, 0, 0.35);
+
+  color-scheme: dark;
+}
+
+/* ---- Light theme ---- */
+:root[data-theme='light'] {
+  --bg: #edeff3;
+  --grad-1: rgba(255, 94, 87, 0.12);
+  --grad-2: rgba(120, 90, 255, 0.07);
+  --surface: #ffffff;
+  --surface-2: #eef0f4;
+  --border: rgba(18, 22, 30, 0.09);
+  --border-strong: rgba(18, 22, 30, 0.18);
+  --text: #181a20;
+  --muted: #5b616e;
+  --muted-dim: #9aa0ad;
+  --day-bg: #ffffff;
+  --day-hover: #eceff4;
+  --accent-glow: rgba(255, 77, 109, 0.22);
+  --shadow-card: 0 18px 40px rgba(18, 22, 30, 0.1);
+
+  color-scheme: light;
+}
+
+/* Honor the OS preference before JS runs, only when no choice is saved. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --bg: #edeff3;
+    --grad-1: rgba(255, 94, 87, 0.12);
+    --grad-2: rgba(120, 90, 255, 0.07);
+    --surface: #ffffff;
+    --surface-2: #eef0f4;
+    --border: rgba(18, 22, 30, 0.09);
+    --border-strong: rgba(18, 22, 30, 0.18);
+    --text: #181a20;
+    --muted: #5b616e;
+    --muted-dim: #9aa0ad;
+    --day-bg: #ffffff;
+    --day-hover: #eceff4;
+    --accent-glow: rgba(255, 77, 109, 0.22);
+    --shadow-card: 0 18px 40px rgba(18, 22, 30, 0.1);
+
+    color-scheme: light;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+  color: var(--text);
+  /* No `background-attachment: fixed` — it forces a full-window repaint on every
+     interaction in Chromium. The gradient sits on a fixed underlay instead. */
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  user-select: none;
+}
+
+/* Decorative gradient wash on its own layer so it never repaints on hover. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(1100px 600px at 50% -10%, var(--grad-1), transparent 60%),
+    radial-gradient(800px 500px at 100% 0%, var(--grad-2), transparent 55%);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+/* macOS hidden-inset title bar: a draggable strip across the top. */
+.titlebar-drag {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 38px;
+  -webkit-app-region: drag;
+  z-index: 10;
+}
+
+.app {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 56px 32px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.hero__brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.hero__mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--accent-grad);
+  box-shadow: 0 8px 24px var(--accent-glow);
+}
+
+.hero__title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.hero__tagline {
+  font-size: 13.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.hero__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.today-btn {
+  -webkit-app-region: no-drag;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 20px;
+  border-radius: 13px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent-grad);
+  box-shadow: 0 8px 22px var(--accent-glow);
+  transition: transform 0.12s var(--ease), box-shadow 0.12s var(--ease);
+  will-change: transform;
+}
+
+.today-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px var(--accent-glow);
+}
+
+.today-btn:active {
+  transform: scale(0.97);
+}
+
+.today-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.today-btn.is-done {
+  background: var(--surface-2);
+  color: var(--text);
+  box-shadow: none;
+  border: 1px solid var(--border-strong);
+}
+
+.today-btn__check {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.today-btn.is-done .today-btn__check {
+  background: var(--accent-grad);
+  color: #fff;
+}
+
+.theme-toggle {
+  -webkit-app-region: no-drag;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: color 0.12s var(--ease), background-color 0.12s var(--ease),
+    border-color 0.12s var(--ease), transform 0.12s var(--ease);
+}
+
+.theme-toggle:hover {
+  color: var(--text);
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+/* ---------- Stats ---------- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.stat-tile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.stat-tile__icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.stat-tile--accent .stat-tile__icon {
+  background: var(--accent-grad);
+  color: #fff;
+  box-shadow: 0 6px 16px var(--accent-glow);
+}
+
+.stat-tile__value {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.stat-tile__suffix {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.stat-tile__label {
+  margin-top: 5px;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-tile__value.is-bumping {
+  animation: bump 0.5s var(--ease);
+}
+
+@keyframes bump {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.18); color: var(--accent-1); }
+  100% { transform: scale(1); }
+}
+
+/* ---------- Calendar ---------- */
+.calendar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+}
+
+.calendar__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.calendar__title {
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.calendar__title span {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.nav-btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  transition: background-color 0.12s var(--ease), color 0.12s var(--ease),
+    border-color 0.12s var(--ease);
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.weekdays__cell {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.day {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 13px;
+  border: 1px solid var(--border);
+  background-color: var(--day-bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
+  display: grid;
+  place-items: center;
+  /* Only transform/colors animate — all compositor- or paint-cheap. */
+  transition: transform 0.12s var(--ease), background-color 0.12s var(--ease),
+    border-color 0.12s var(--ease);
+}
+
+.day__num,
+.day__check {
+  position: relative;
+  z-index: 1;
+}
+
+.day--pad {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.day:not(.day--pad):not(.day--future):not(.day--done):hover {
+  background-color: var(--day-hover);
+  border-color: var(--border-strong);
+}
+
+.day:not(.day--pad):not(.day--future):hover {
+  transform: translateY(-1px);
+}
+
+.day:not(.day--pad):not(.day--future):active {
+  transform: scale(0.95);
+}
+
+.day--future {
+  color: var(--muted-dim);
+  cursor: default;
+  opacity: 0.5;
+}
+
+.day--today {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.day__num {
+  transition: opacity 0.15s var(--ease), transform 0.15s var(--ease);
+}
+
+.day__check {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.18s var(--ease-pop), transform 0.18s var(--ease-pop);
+}
+
+.day--done {
+  border-color: transparent;
+  color: #fff;
+  /* Gradient on the element's OWN background, not a pseudo-element: it stays
+     painted when the cell is promoted to a GPU layer by the hover transform.
+     A ::before fill gets dropped in that case and the cell flashes grey. */
+  background-color: var(--accent);
+  background-image: var(--accent-grad);
+  box-shadow: 0 4px 14px var(--accent-glow);
+}
+
+.day--done .day__num {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.day--done .day__check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.day--done.day--today {
+  outline-color: rgba(255, 255, 255, 0.65);
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 22px;
+}
+
+.footer__hint {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.link-btn {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent-1);
+  transition: color 0.12s var(--ease);
+}
+
+.link-btn:hover {
+  color: var(--accent-2);
+}
+
+/* ---------- Keyboard focus ---------- */
+/* `outline` (not box-shadow) survives the gradient + border-radius on day cells. */
+.today-btn:focus-visible,
+.nav-btn:focus-visible,
+.theme-toggle:focus-visible,
+.day:not(.day--pad):not(.day--future):focus-visible,
+.link-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .app {
+    padding: 56px 18px 28px;
+  }
+}
